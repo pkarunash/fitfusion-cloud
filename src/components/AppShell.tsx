@@ -1,7 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { Dumbbell, Home, MessageCircle, ShoppingCart, Store, IdCard, Shield, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const navItems = [
   { to: "/", label: "Home", icon: Home },
@@ -14,7 +16,12 @@ const navItems = [
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { count } = useCart();
   const { user, isAdmin, signOut } = useAuth();
+  const { siteName, tagline } = useSiteSettings();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  useEffect(() => {
+    document.title = siteName;
+  }, [siteName]);
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
@@ -24,9 +31,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <span className="grid size-9 place-items-center rounded-lg bg-primary text-primary-foreground">
               <Dumbbell className="size-5" />
             </span>
-            <span className="font-display text-2xl leading-none">
-              Iron<span className="text-primary">Forge</span>
-            </span>
+            <span className="font-display text-2xl leading-none">{siteName}</span>
           </Link>
 
           <nav className="ml-6 hidden items-center gap-1 md:flex">
@@ -82,7 +87,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <main>{children}</main>
 
       <footer className="mt-16 hidden border-t border-border py-8 text-center text-sm text-muted-foreground md:block">
-        IronForge Gym · Protein, equipment & memberships · Open 5am–11pm
+        {siteName} · {tagline} · Open 5am–11pm
       </footer>
 
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 backdrop-blur md:hidden">

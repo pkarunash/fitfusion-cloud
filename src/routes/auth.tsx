@@ -5,14 +5,15 @@ import { Dumbbell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/useAuth";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in or Join | IronForge Gym" },
-      { name: "description", content: "Create your IronForge Gym account to order supplements and chat with coaches." },
-      { property: "og:title", content: "Sign in or Join | IronForge Gym" },
-      { property: "og:description", content: "Member sign in for the IronForge Gym app." },
+      { title: "Sign in or Join | World Gym" },
+      { name: "description", content: "Create your World Gym account to order supplements and chat with coaches." },
+      { property: "og:title", content: "Sign in or Join | World Gym" },
+      { property: "og:description", content: "Member sign in for the World Gym app." },
     ],
   }),
   component: AuthPage,
@@ -25,6 +26,7 @@ function AuthPage() {
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
   const { user } = useAuth();
+  const { siteName } = useSiteSettings();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -75,7 +77,7 @@ function AuthPage() {
         <span className="grid size-11 place-items-center rounded-lg bg-primary text-primary-foreground">
           <Dumbbell className="size-6" />
         </span>
-        <h1 className="mt-4 text-3xl">{mode === "signin" ? "Member sign in" : "Join IronForge"}</h1>
+        <h1 className="mt-4 text-3xl">{mode === "signin" ? "Member sign in" : `Join ${siteName}`}</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Order supplements, track your plan and chat with your coach.
         </p>

@@ -9,16 +9,16 @@ import { inr } from "@/hooks/useCart";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "IronForge Gym — Protein, Equipment & Membership Fees" },
+      { title: "World Gym — Protein, Equipment & Membership Fees" },
       {
         name: "description",
         content:
-          "Train at IronForge Gym. Buy whey protein and home-gym equipment, view membership fee plans, and chat live with our coaches.",
+          "Train at World Gym. Buy whey protein and home-gym equipment, view membership fee plans, and chat live with our coaches.",
       },
-      { property: "og:title", content: "IronForge Gym — Protein, Equipment & Membership Fees" },
+      { property: "og:title", content: "World Gym — Protein, Equipment & Membership Fees" },
       {
         property: "og:description",
-        content: "Protein, equipment and membership plans from IronForge Gym, with live coach chat.",
+        content: "Protein, equipment and membership plans from World Gym, with live coach chat.",
       },
     ],
   }),
@@ -59,7 +59,7 @@ function Index() {
       <section className="relative overflow-hidden">
         <img
           src={heroImg}
-          alt="Athlete deadlifting in the IronForge Gym training floor"
+          alt="Athlete deadlifting in the World Gym training floor"
           width={1600}
           height={1008}
           className="absolute inset-0 h-full w-full object-cover opacity-60"

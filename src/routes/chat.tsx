@@ -5,18 +5,19 @@ import { toast } from "sonner";
 import { ImagePlus, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { cld, uploadToCloudinary } from "@/lib/cloudinary";
 
 export const Route = createFileRoute("/chat")({
   head: () => ({
     meta: [
-      { title: "Coach Chat | IronForge Gym" },
+      { title: "Coach Chat | World Gym" },
       {
         name: "description",
-        content: "Message the IronForge Gym team about memberships, orders and training — live replies.",
+        content: "Message the World Gym team about memberships, orders and training — live replies.",
       },
-      { property: "og:title", content: "Coach Chat | IronForge Gym" },
-      { property: "og:description", content: "Live chat with the IronForge Gym team." },
+      { property: "og:title", content: "Coach Chat | World Gym" },
+      { property: "og:description", content: "Live chat with the World Gym team." },
     ],
   }),
   component: ChatPage,
@@ -129,6 +130,13 @@ function Thread({
   isAdmin: boolean;
 }) {
   const qc = useQueryClient();
+  const { siteName } = useSiteSettings();
+  const initials = siteName
+    .split(/\s+/)
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
   const [text, setText] = useState("");
   const [uploading, setUploading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -200,10 +208,10 @@ function Thread({
     <section className="surface-card flex h-[70vh] flex-col overflow-hidden">
       <header className="flex items-center gap-3 border-b border-border p-3">
         <span className="grid size-9 place-items-center rounded-full bg-primary font-display text-lg text-primary-foreground">
-          IF
+          {initials}
         </span>
         <div>
-          <p className="font-bold leading-tight">{isAdmin ? "Member chat" : "IronForge Support"}</p>
+          <p className="font-bold leading-tight">{isAdmin ? "Member chat" : `${siteName} Support`}</p>
           <p className="text-xs text-success">online</p>
         </div>
       </header>

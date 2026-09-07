@@ -12,12 +12,12 @@ type Spec = { label: string; value: string };
 export const Route = createFileRoute("/product/$slug")({
   head: ({ params }) => ({
     meta: [
-      { title: `${params.slug.replace(/-/g, " ")} | IronForge Store` },
+      { title: `${params.slug.replace(/-/g, " ")} | World Gym Store` },
       {
         name: "description",
-        content: "Full specifications, pricing and stock for this IronForge Gym store product.",
+        content: "Full specifications, pricing and stock for this World Gym store product.",
       },
-      { property: "og:title", content: "IronForge Store product" },
+      { property: "og:title", content: "World Gym Store product" },
       { property: "og:description", content: "Specifications, pricing and availability." },
     ],
   }),

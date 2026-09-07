@@ -21,13 +21,13 @@ const sorts = [
 export const Route = createFileRoute("/shop")({
   head: () => ({
     meta: [
-      { title: "Store — Protein & Gym Equipment | IronForge Gym" },
+      { title: "Store — Protein & Gym Equipment | World Gym" },
       {
         name: "description",
         content:
           "Browse whey protein, mass gainers, creatine, dumbbells, racks and gym accessories with full specifications and member pricing.",
       },
-      { property: "og:title", content: "Store — Protein & Gym Equipment | IronForge Gym" },
+      { property: "og:title", content: "Store — Protein & Gym Equipment | World Gym" },
       {
         property: "og:description",
         content: "Protein powders, equipment and accessories with detailed specifications.",

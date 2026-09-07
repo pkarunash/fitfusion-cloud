@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Plus, Trash2, Upload, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import {
   cld,
   getCloudinaryConfig,
@@ -17,9 +18,9 @@ import { inr } from "@/hooks/useCart";
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Admin — Manage Store & Plans | IronForge Gym" },
-      { name: "description", content: "Admin tools to manage IronForge products, images and membership fee plans." },
-      { property: "og:title", content: "Admin — IronForge Gym" },
+      { title: "Admin — Manage Store & Plans | World Gym" },
+      { name: "description", content: "Admin tools to manage the gym's name, products, images and membership fee plans." },
+      { property: "og:title", content: "Admin — World Gym" },
       { property: "og:description", content: "Manage products, images and membership plans." },
       { name: "robots", content: "noindex" },
     ],
@@ -66,10 +67,71 @@ function AdminPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-8 px-4 py-6">
       <h1 className="text-4xl">Admin</h1>
+      <SiteSettingsManager />
       <CloudinarySettings />
       <ProductManager />
       <PlanManager />
     </div>
+  );
+}
+
+function SiteSettingsManager() {
+  const qc = useQueryClient();
+  const { siteName, tagline, isLoading } = useSiteSettings();
+  const [name, setName] = useState("");
+  const [tag, setTag] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading) {
+      setName(siteName);
+      setTag(tagline);
+    }
+  }, [isLoading, siteName, tagline]);
+
+  async function save() {
+    if (!name.trim()) {
+      toast.error("App name is required");
+      return;
+    }
+    setSaving(true);
+    const { error } = await supabase
+      .from("site_settings")
+      .update({ site_name: name.trim(), tagline: tag.trim() })
+      .eq("id", 1);
+    setSaving(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("App name updated");
+    qc.invalidateQueries({ queryKey: ["site-settings"] });
+  }
+
+  return (
+    <section className="surface-card p-5">
+      <h2 className="text-2xl">App name</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Shown in the header, footer and browser tab across the whole app.
+      </p>
+      <div className="mt-4 grid gap-3 md:grid-cols-[1fr_1fr_auto]">
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="App name (e.g. World Gym)"
+          className="field"
+        />
+        <input
+          value={tag}
+          onChange={(e) => setTag(e.target.value)}
+          placeholder="Tagline (e.g. Protein, Equipment & Memberships)"
+          className="field"
+        />
+        <button onClick={save} disabled={saving} className="btn-primary">
+          {saving ? "Saving…" : "Save"}
+        </button>
+      </div>
+    </section>
   );
 }
 

@@ -7,13 +7,13 @@ import { inr } from "@/hooks/useCart";
 export const Route = createFileRoute("/plans")({
   head: () => ({
     meta: [
-      { title: "Membership Fee Structure | IronForge Gym" },
+      { title: "Membership Fee Structure | World Gym" },
       {
         name: "description",
         content:
-          "Transparent IronForge Gym membership fees: monthly, quarterly and annual plans with classes, personal training and store discounts.",
+          "Transparent World Gym membership fees: monthly, quarterly and annual plans with classes, personal training and store discounts.",
       },
-      { property: "og:title", content: "Membership Fee Structure | IronForge Gym" },
+      { property: "og:title", content: "Membership Fee Structure | World Gym" },
       { property: "og:description", content: "Monthly, quarterly and annual gym membership pricing." },
     ],
   }),

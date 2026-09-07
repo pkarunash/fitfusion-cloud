@@ -7,10 +7,10 @@ import { inr, useCart } from "@/hooks/useCart";
 export const Route = createFileRoute("/cart")({
   head: () => ({
     meta: [
-      { title: "Your Cart | IronForge Gym Store" },
+      { title: "Your Cart | World Gym Store" },
       { name: "description", content: "Review your protein, equipment and accessory order before checkout." },
-      { property: "og:title", content: "Your Cart | IronForge Gym Store" },
-      { property: "og:description", content: "Review your IronForge store order." },
+      { property: "og:title", content: "Your Cart | World Gym Store" },
+      { property: "og:description", content: "Review your World Gym store order." },
     ],
   }),
   component: CartPage,
