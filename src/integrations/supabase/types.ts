@@ -175,18 +175,27 @@ export type Database = {
           id: number
           site_name: string
           tagline: string
+          whatsapp_number: string
+          cloudinary_cloud_name: string
+          cloudinary_upload_preset: string
           updated_at: string
         }
         Insert: {
           id?: number
           site_name?: string
           tagline?: string
+          whatsapp_number?: string
+          cloudinary_cloud_name?: string
+          cloudinary_upload_preset?: string
           updated_at?: string
         }
         Update: {
           id?: number
           site_name?: string
           tagline?: string
+          whatsapp_number?: string
+          cloudinary_cloud_name?: string
+          cloudinary_upload_preset?: string
           updated_at?: string
         }
         Relationships: []

@@ -130,7 +130,7 @@ function Thread({
   isAdmin: boolean;
 }) {
   const qc = useQueryClient();
-  const { siteName } = useSiteSettings();
+  const { siteName, cloudinaryCloudName, cloudinaryUploadPreset } = useSiteSettings();
   const initials = siteName
     .split(/\s+/)
     .map((w) => w[0])
@@ -195,7 +195,11 @@ function Thread({
   async function pickImage(file: File) {
     setUploading(true);
     try {
-      const url = await uploadToCloudinary(file, "gym/chat");
+      const url = await uploadToCloudinary(
+        file,
+        { cloudName: cloudinaryCloudName, uploadPreset: cloudinaryUploadPreset },
+        "gym/chat",
+      );
       await send(null, url);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Upload failed");

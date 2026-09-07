@@ -6,13 +6,7 @@ import { Plus, Trash2, Upload, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import {
-  cld,
-  getCloudinaryConfig,
-  isCloudinaryConfigured,
-  saveCloudinaryConfig,
-  uploadToCloudinary,
-} from "@/lib/cloudinary";
+import { cld, isCloudinaryConfigured, uploadToCloudinary } from "@/lib/cloudinary";
 import { inr } from "@/hooks/useCart";
 
 export const Route = createFileRoute("/admin")({
@@ -77,17 +71,19 @@ function AdminPage() {
 
 function SiteSettingsManager() {
   const qc = useQueryClient();
-  const { siteName, tagline, isLoading } = useSiteSettings();
+  const { siteName, tagline, whatsappNumber, isLoading } = useSiteSettings();
   const [name, setName] = useState("");
   const [tag, setTag] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!isLoading) {
       setName(siteName);
       setTag(tagline);
+      setWhatsapp(whatsappNumber);
     }
-  }, [isLoading, siteName, tagline]);
+  }, [isLoading, siteName, tagline, whatsappNumber]);
 
   async function save() {
     if (!name.trim()) {
@@ -97,24 +93,29 @@ function SiteSettingsManager() {
     setSaving(true);
     const { error } = await supabase
       .from("site_settings")
-      .update({ site_name: name.trim(), tagline: tag.trim() })
+      .update({
+        site_name: name.trim(),
+        tagline: tag.trim(),
+        whatsapp_number: whatsapp.replace(/\D/g, ""),
+      })
       .eq("id", 1);
     setSaving(false);
     if (error) {
       toast.error(error.message);
       return;
     }
-    toast.success("App name updated");
+    toast.success("Site settings updated");
     qc.invalidateQueries({ queryKey: ["site-settings"] });
   }
 
   return (
     <section className="surface-card p-5">
-      <h2 className="text-2xl">App name</h2>
+      <h2 className="text-2xl">Site settings</h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        Shown in the header, footer and browser tab across the whole app.
+        App name and tagline show in the header, footer and browser tab. The WhatsApp number is where "Enquire now"
+        on the fee plans sends enquiries — include the country code, e.g. 91 for India, no + or spaces.
       </p>
-      <div className="mt-4 grid gap-3 md:grid-cols-[1fr_1fr_auto]">
+      <div className="mt-4 grid gap-3 md:grid-cols-2">
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -127,31 +128,57 @@ function SiteSettingsManager() {
           placeholder="Tagline (e.g. Protein, Equipment & Memberships)"
           className="field"
         />
-        <button onClick={save} disabled={saving} className="btn-primary">
-          {saving ? "Saving…" : "Save"}
-        </button>
+        <input
+          value={whatsapp}
+          onChange={(e) => setWhatsapp(e.target.value)}
+          placeholder="WhatsApp number with country code (e.g. 916383490216)"
+          className="field md:col-span-2"
+        />
       </div>
+      <button onClick={save} disabled={saving} className="btn-primary mt-4">
+        {saving ? "Saving…" : "Save"}
+      </button>
     </section>
   );
 }
 
 function CloudinarySettings() {
+  const qc = useQueryClient();
+  const { cloudinaryCloudName, cloudinaryUploadPreset, isLoading } = useSiteSettings();
   const [cloudName, setCloudName] = useState("");
   const [uploadPreset, setUploadPreset] = useState("");
-  const [ready, setReady] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const c = getCloudinaryConfig();
-    setCloudName(c.cloudName);
-    setUploadPreset(c.uploadPreset);
-    setReady(isCloudinaryConfigured());
-  }, []);
+    if (!isLoading) {
+      setCloudName(cloudinaryCloudName);
+      setUploadPreset(cloudinaryUploadPreset);
+    }
+  }, [isLoading, cloudinaryCloudName, cloudinaryUploadPreset]);
+
+  const ready = isCloudinaryConfigured({ cloudName: cloudinaryCloudName, uploadPreset: cloudinaryUploadPreset });
+
+  async function save() {
+    setSaving(true);
+    const { error } = await supabase
+      .from("site_settings")
+      .update({ cloudinary_cloud_name: cloudName.trim(), cloudinary_upload_preset: uploadPreset.trim() })
+      .eq("id", 1);
+    setSaving(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Cloudinary settings saved");
+    qc.invalidateQueries({ queryKey: ["site-settings"] });
+  }
 
   return (
     <section className="surface-card p-5">
       <h2 className="text-2xl">Cloudinary image storage</h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        Product and chat photos upload straight to your Cloudinary account with an unsigned upload preset.{" "}
+        Product and chat photos upload straight to your Cloudinary account with an unsigned upload preset. Stored
+        centrally, so it works from any device you sign in as admin from.{" "}
         {ready ? (
           <span className="font-semibold text-success">Connected.</span>
         ) : (
@@ -171,15 +198,8 @@ function CloudinarySettings() {
           placeholder="Unsigned upload preset"
           className="field"
         />
-        <button
-          onClick={() => {
-            saveCloudinaryConfig({ cloudName: cloudName.trim(), uploadPreset: uploadPreset.trim() });
-            setReady(isCloudinaryConfigured());
-            toast.success("Cloudinary settings saved");
-          }}
-          className="btn-primary"
-        >
-          Save
+        <button onClick={save} disabled={saving} className="btn-primary">
+          {saving ? "Saving…" : "Save"}
         </button>
       </div>
     </section>
@@ -188,6 +208,7 @@ function CloudinarySettings() {
 
 function ProductManager() {
   const qc = useQueryClient();
+  const { cloudinaryCloudName, cloudinaryUploadPreset } = useSiteSettings();
   const [form, setForm] = useState(emptyForm);
   const [specs, setSpecs] = useState<SpecRow[]>([{ label: "", value: "" }]);
   const [images, setImages] = useState<string[]>([]);
@@ -206,8 +227,9 @@ function ProductManager() {
   async function handleFiles(files: FileList) {
     setUploading(true);
     try {
+      const config = { cloudName: cloudinaryCloudName, uploadPreset: cloudinaryUploadPreset };
       const urls: string[] = [];
-      for (const file of Array.from(files)) urls.push(await uploadToCloudinary(file, "gym/products"));
+      for (const file of Array.from(files)) urls.push(await uploadToCloudinary(file, config, "gym/products"));
       setImages((prev) => [...prev, ...urls]);
       toast.success(`${urls.length} image(s) uploaded`);
     } catch (err) {

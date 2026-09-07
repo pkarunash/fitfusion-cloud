@@ -1,8 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Check, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { inr } from "@/hooks/useCart";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export const Route = createFileRoute("/plans")({
   head: () => ({
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/plans")({
 });
 
 function Plans() {
+  const { siteName, whatsappNumber } = useSiteSettings();
   const { data: plans, isLoading } = useQuery({
     queryKey: ["plans", "all"],
     queryFn: async () => {
@@ -71,9 +73,16 @@ function Plans() {
                   </li>
                 ))}
               </ul>
-              <Link to="/chat" className="btn-primary mt-5">
+              <a
+                href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+                  `Hi ${siteName}, I'm interested in the ${plan.name} plan (${inr(price)}).`,
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary mt-5"
+              >
                 Enquire now
-              </Link>
+              </a>
             </div>
           );
         })}
